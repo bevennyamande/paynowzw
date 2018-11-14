@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: paynowzw
-Version: 1.0.1
+Version: 1.0.2
 Summary: A minimalist python wrapper for the Paynow Payment Gateway.
 Home-page: https://github.com/bevennyamande/paynowzw
 Author: Beven Nyamande
