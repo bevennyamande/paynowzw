@@ -3,13 +3,9 @@ import requests
 import hashlib
 from urllib.parse import unquote_plus
 
-
-URL_INIT_WEB = 'http://127.0.0.1:5000/web'
-URL_INIT_MOBILE = 'http://127.0.0.1:5000/mobile'
-
 # TODO create a config file
-# URL_INIT_WEB = "https://www.paynow.co.zw/interface/initiatetransaction"
-# URL_INIT_MOBILE = "https://www.paynow.co.zw/interface/remotetransaction"
+URL_INIT_WEB = "https://www.paynow.co.zw/interface/initiatetransaction"
+URL_INIT_MOBILE = "https://www.paynow.co.zw/interface/remotetransaction"
 
 class Paynow(object):
 

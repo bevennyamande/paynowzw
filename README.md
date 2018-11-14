@@ -1,7 +1,7 @@
 Get started
 ---------------
-✨🍰✨✨🍰✨✨🍰✨✨🍰✨✨🍰✨✨🍰✨
-✨🍰✨✨🍰✨✨🍰✨✨🍰✨✨🍰✨✨🍰✨
+
+✨
 `paynowzw` API for Humans
 This framework provides the interface to the <a href="http://www.paynow.co.zw">Paynow Zimbabwe</a>Payment Gateway system
 
