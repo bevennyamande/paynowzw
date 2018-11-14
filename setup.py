@@ -17,7 +17,7 @@ AUTHOR = 'Beven Nyamande'
 REQUIRES_PYTHON = '>=3.5.0'
 VERSION = None
 REQUIRED = [
-    'requests','urllib.parse'
+    'requests',
 ]
 
 
