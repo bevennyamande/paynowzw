@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-try:
-    from setuptools import setup
-except:
-    from disutils.core import setup
+from setuptools import setup
 
 setup(
     name='paynow',
@@ -23,7 +20,7 @@ setup(
     license='MIT',
     classifiers=[
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python ',
         'Programming Language :: Python :: 3.6',
     ],
 )
