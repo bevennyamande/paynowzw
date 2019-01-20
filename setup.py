@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 try:
     from setuptools import setup
 except:
@@ -12,7 +13,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Beven Nyamande',
     author_email='bevenfx@gmail.com',
-    url='http://www.github.com/bevennyamande/paynowzw',,,,,,,,,
+    url='http://www.github.com/bevennyamande/paynowzw',
     py_modules=['paynow'],
     include_package_data=True,
     install_requires=[
