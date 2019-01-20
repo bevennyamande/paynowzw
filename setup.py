@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 try:
     from setuptools import setup
 except:
@@ -7,10 +6,15 @@ except:
 
 setup(
     name='paynow',
-    version='1.0',
+    version='0.1dev',
     description='A minimalist python wrapper for the Paynow Payment Gateway.',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='Beven Nyamande',
+    author_email='bevenfx@gmail.com',
+    url='http://www.github.com/bevennyamande/paynowzw'.
     py_modules=['paynow'],
+    include_package_data=True,
     install_requires=[
     'requests',
 ]
@@ -18,10 +22,7 @@ setup(
     license='MIT',
     classifiers=[
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy'
     ],
 )
