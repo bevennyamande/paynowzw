@@ -7,20 +7,7 @@ Check official website for Paynow  [Paynow](http://www.paynow.co.zw)
 
 Installing paynowzw is as simple as following the steps belows
 
-### Installation steps
-
-* Install globally on your system through pip
-* Using a virtual environment, i prefer [pipenv](http://)
-
-
-```python
-$ pip install paynowzw
-```
-or
-
-```python
 $ pipenv install paynowzw
-```
 
 ### Dependencies
 
