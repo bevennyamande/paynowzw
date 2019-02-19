@@ -1,51 +1,41 @@
-Get started
----------------
+![Paynowzw Logo](./logo.png)
 
-✨
-`paynowzw` API for Humans
-This framework provides the interface to the <a href="http://www.paynow.co.zw">Paynow Zimbabwe</a>Payment Gateway system
+Simple python API wrapper for Paynow Zimbabwe Online Payment Gateway system.
+Check official website for Paynow  [Paynow](http://www.paynow.co.zw)
 
+## Installation
 
+Installing paynowzw is as simple as following the steps belows
 
-Installation
----------------
+### Installation steps
 
--  `$ pip install paynowzw`
-
-Or through the recent pipenv
-
--  `$ pipenv  install paynowzw`
-
-`paynowzw` requires the following dependencies
-
-- requests library by Kenneth Reitz
-- urllib.parse library
+* Install globally on your system through pip
+* Using a virtual environment, i prefer [pipenv](http://)
 
 
-Usage
----------------
-
-`from paynowzw import Paynow`
+```python
+$ pip install paynowzw
 ```
-PAYNOW_ID = 'xyz'
-PAYNOW_KEY = '24234jsdhfs'
-RETURN_URL = 'http://www.test.co.zw/return_url'
-RESULT_URL = 'http://www.test.co.zw/result_url'
+or
 
-# create new paynow object
-paynow = paynowzw.Paynow(PAYNOW_ID, PAYNOW_KEY, RETURN_URL, RESULT_URL)
+```python
+$ pipenv install paynowzw
+```
 
-The above method is for web based payments. It does not require
-the 'authemail' and 'phone' values. This however differs with
-mobile based payments. For mobile just declare as shown below
+### Dependencies
 
-paynow = Paynow('id12344','key1234',
-                'www.example.com/return_url',
-                'www.example.com/result_url',
-                 authemail='example@example.com',
-                 phone='0777XXXX')
+* request library py [Kenneth Reitz](https://)
+* urllib.parse library
 
-2nd Step
+
+## Tutorial
+
+```python
+
+from paynowzw import Paynow
+
+paynow = Paynow()
+
 # send payment to Paynow with reference as str
 paynow.send_payment('reference', {'honey':23.345})
 
@@ -58,29 +48,26 @@ response = paynow.send_payment('reference', products)
 #check payment status
 if response['Status'] == 'Ok':
 ....# do stuff
-
-Status maybe 'Error' if the payment fails
+else:
+    # do something else. status returned an 'Error' if the payment fails
 
 #Use this method to poll status updates about a payment
 poll_status = paynow.status_update()
+
 ```
 
+## To Do
 
-To Do
------
-- Documentation ,Documentation just felt lazy :)
-- Create example with a web framework mainly flask
-- Create a Flask extension
-- Tests for all defined methods
-- Refactoring
+* Documentation ,Documentation just felt lazy :)
+* Create example with a web framework mainly flask
+* Create a Flask extension
+* Create a test suite 
+* Refactoring
 
-
--   Tests via `$ python3 tests.py`
-
-Pull requests are encouraged!
+### Pull requests are encouraged!
 
 
-License
+## License
 -------
 MIT License
 
@@ -89,9 +76,3 @@ Copyright (c) 2018 bevenfx. However this is free and unencumbered software relea
 Anyone is free to copy, modify, publish, use, compile, sell, or
 distribute this software, either in source code form or as a compiled
 binary, for any purpose, commercial or non-commercial, and by any means.
-
-Just acknowledge my work
-
-✨🍰✨
-
-

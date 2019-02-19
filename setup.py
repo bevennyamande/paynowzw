@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(
-    name='paynow',
+    name='paynowzw',
     version='0.1dev',
     description='A minimalist python wrapper for the Paynow Payment Gateway.',
     long_description=open('README.md').read(),
@@ -11,7 +11,7 @@ setup(
     author='Beven Nyamande',
     author_email='bevenfx@gmail.com',
     url='http://www.github.com/bevennyamande/paynowzw',
-    py_modules=['paynow'],
+    py_modules=['paynowzw'],
     include_package_data=True,
     install_requires=[
     'requests',
@@ -21,6 +21,7 @@ setup(
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python ',
+        'Programming Language :: Python :: 3.4 ',
         'Programming Language :: Python :: 3.6',
     ],
 )

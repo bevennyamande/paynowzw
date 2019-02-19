@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 import unittest
-import paynow
+import paynowzw
 
 class PaynowTestCase(unittest.TestCase):
     def setUp(self):
-        self.pynw = paynow.Paynow(pid='123', pkey='122', returnurl='www',
+        self.paynow = paynowzw.Paynow(pid='123', pkey='122', returnurl='www',
                          resulturl='weew', email='wew', phone='wew')
 
     def test_send_payment(self):

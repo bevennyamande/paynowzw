@@ -1,31 +1,49 @@
-from collections import namedtuple
 from decimal import Decimal, localcontext
-import hashlib, requests
+import requests
+import hashlib
+
 try:
     from urllib.parse import unquote_plus
 except:
     from urllib import unquote_plus
 
 
-class Paynow(namedtuple('Paynow', ['pid', 'pkey' ,'returnurl', 
-                                   'resulturl' ,'email' ,'phone'])):
-    """Create a paynow object with the required fields stated in docs"""
+class Paynow(object):
+    '''Create paynow object class'''
 
-    weburl = "https://www.paynow.co.zw/interface/initiatetransaction"
-    mobileurl = "https://www.paynow.co.zw/interface/remotetransaction"
-    products = from_paynw = {}
-    reference = ''
+    weburl: str = 'https://www.paynow.co.zw/interface/initiatetransaction'
+    mobileurl: str = 'https://www.paynow.co.zw/interface/remotetransaction'
+    products: dict = {}
+    reference: str  = ''
+    from_paynow: dict = {}
+
+    def __init__(self, pid: str='',
+                 pkey: str='', 
+                 returnurl: str='', 
+                 resulturl: str='',
+                 email: str='',
+                 phone: str=None):
+
+        self.pid = pid
+        self.pkey = pkey
+        self.returnurl = returnurl
+        self.resulturl = resulturl
+        self.email = email
+        self.phone = phone
+
 
     def set_response_from_paynow(self, response):
     	self.from_paynw = self.cipher(response, method='decrypt') if response else None
     	return self.from_paynw
 
     def total(self):
-        """ Returns totals of all items in the cart as float to 2dp"""
-        with localcontext() as ctx: ctx.prec = 2
-        amt =  [self.products[key] for key in self.products.keys()]
-        amt = sum(amt)
-        if amt <= 1: raise ValueError('Payments less than 1$ are disallowed!')
+        """ Adds totals of items in cart. Return float to 2 decimal point """
+        
+        with localcontext() as ctx:
+            ctx.prec = 2
+        amt = sum(value for value in self.products.values())
+        if amt <= 1:
+            raise ValueError('Payments less than $1 are disallowed!')
         return float(Decimal(amt).quantize(Decimal('.00')))
 
     def send_payment(self, reference, products):
@@ -80,15 +98,22 @@ class Paynow(namedtuple('Paynow', ['pid', 'pkey' ,'returnurl',
 
     def build_request(self, reference, products):
         self.reference = reference
-        # TODO ensure products is a dict and items follow the rule ie float
-        products = products.items()
+        try:
+            products = products.items()
+        except Exception as e:
+            raise e
         for desc, amount in products:
             self.products[desc] = float(amount)
-        body = {'id':self.paynow_id,'reference':self.reference,
-        	    'amount':self._total(),'additionalinfo':'',
-        	    'return_url':self.return_url,'result_url':self.result_url,
-                'authemail':self.authemail,'phone':self._phone,
-        	    'Status':'Message'
+        body = {'id':self.paynow_id,
+                'reference':self.reference,
+                'amount':self._total(),
+                'additionalinfo':'',
+                'return_url':self.return_url,
+                'result_url':self.result_url,
+                'authemail':self.authemail,
+                'phone':self._phone,
+        	'Status':'Message'
                 }
+
         body['Hash'] = self.cipher(body,method="encrypt")
         return body
