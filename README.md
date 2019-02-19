@@ -7,7 +7,11 @@ Check official website for Paynow  [Paynow](http://www.paynow.co.zw)
 
 Installing paynowzw is as simple as following the steps belows
 
-$ pipenv install paynowzw
+
+```python
+pipenv install paynowzw
+```
+
 
 ### Dependencies
 
