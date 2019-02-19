@@ -59,7 +59,7 @@ poll_status = paynow.status_update()
 
 
 ## License
--------
+
 MIT License
 
 Copyright (c) 2018 bevenfx. However this is free and unencumbered software released into the public domain.
