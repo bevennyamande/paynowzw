@@ -122,5 +122,4 @@ class Paynow(object):
                 }
 
         body['Hash'] = self.cipher(body, method="encrypt")
-        import pdb;pdb.set_trace()
         return body

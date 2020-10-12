@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(
-    name='paynowzw',
+    name='paynowzim',
     version='2.0.0',
     description='A minimalist python wrapper for the Paynow Payment Gateway.',
     long_description=open('README.md').read(),
