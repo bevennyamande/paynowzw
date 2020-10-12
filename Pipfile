@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 requests = "*"
+flask = "*"
+six = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8.5"

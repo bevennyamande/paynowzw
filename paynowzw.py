@@ -15,11 +15,11 @@ class Paynow(object):
     mobileurl: str = 'https://www.paynow.co.zw/interface/remotetransaction'
     products: dict = {}
     reference: str  = ''
-    from_paynow: dict = {}
+    frompaynow: dict = {}
 
     def __init__(self, pid: str='',
-                 pkey: str='', 
-                 returnurl: str='', 
+                 pkey: str='',
+                 returnurl: str='',
                  resulturl: str='',
                  email: str='',
                  phone: str=None):
@@ -33,18 +33,20 @@ class Paynow(object):
 
 
     def set_response_from_paynow(self, response):
-    	self.from_paynw = self.cipher(response, method='decrypt') if response else None
-    	return self.from_paynw
+        self.frompaynw = self.cipher(response, method='decrypt') if response else None
+        return self.frompaynw
+
 
     def total(self):
         """ Adds totals of items in cart. Return float to 2 decimal point """
-        
+
         with localcontext() as ctx:
             ctx.prec = 2
         amt = sum(value for value in self.products.values())
         if amt <= 1:
             raise ValueError('Payments less than $1 are disallowed!')
         return float(Decimal(amt).quantize(Decimal('.00')))
+
 
     def send_payment(self, reference, products):
         data = self.build_request(reference, products)
@@ -56,12 +58,12 @@ class Paynow(object):
                         requests.post(mobileurl, data=data))
             # URL that handles web payments
             return self.set_response_from_paynow(requests.post(
-                                       weburl, data=data))
+                                       self.weburl, data=data))
         except Exception as e:
             raise e
 
     def status_update(self):
-        pollurl = self.from_paynw.get('pollurl', '')
+        pollurl = self.frompaynw.get('pollurl', '')
         data = requests.post(pollurl) if pollurl else ''
         try:return self.cipher(data, method="decrypt")
         except Exception:pass
@@ -69,11 +71,15 @@ class Paynow(object):
 
     def cipher(self, data, method=''):
         if method == "encrypt":
-            msg = ''
+            out = ""
             for key, value in data.items():
-                    msg += str(value)
-            msg += self.paynow_key.lower()
-            return hashlib.sha512(msg.encode('utf-8')).hexdigest().upper()
+                if(str(key).lower() == 'hash'):
+                    continue
+
+            out += str(value)
+            out += self.pkey.lower()
+            return hashlib.sha512(out.encode('utf-8')).hexdigest().upper()
+
         else:
             msg = {}
             # TODO find a proper method to strip tabs and newlines ie method
@@ -104,16 +110,17 @@ class Paynow(object):
             raise e
         for desc, amount in products:
             self.products[desc] = float(amount)
-        body = {'id':self.paynow_id,
+        body = {'id':self.pid,
                 'reference':self.reference,
-                'amount':self._total(),
+                'amount':self.total(),
                 'additionalinfo':'',
-                'return_url':self.return_url,
-                'result_url':self.result_url,
-                'authemail':self.authemail,
-                'phone':self._phone,
-        	'Status':'Message'
+                'return_url':self.returnurl,
+                'result_url':self.resulturl,
+                'authemail':self.email,
+                'phone':self.phone,
+                'Status':'Message'
                 }
 
-        body['Hash'] = self.cipher(body,method="encrypt")
+        body['Hash'] = self.cipher(body, method="encrypt")
+        import pdb;pdb.set_trace()
         return body
