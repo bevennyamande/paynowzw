@@ -1,125 +1,111 @@
 from decimal import Decimal, localcontext
-import requests
-import hashlib
-
-try:
-    from urllib.parse import unquote_plus
-except:
-    from urllib import unquote_plus
+import requests, hashlib
+from six.moves.urllib_parse import quote_plus, parse_qs
 
 
 class Paynow(object):
-    '''Create paynow object class'''
+    '''Instantiates the Paynow Object'''
 
-    weburl: str = 'https://www.paynow.co.zw/interface/initiatetransaction'
-    mobileurl: str = 'https://www.paynow.co.zw/interface/remotetransaction'
-    products: dict = {}
-    reference: str  = ''
-    frompaynow: dict = {}
+    WEB_URL: str = 'https://www.paynow.co.zw/interface/initiatetransaction'
+    MOBILE_URL: str = 'https://www.paynow.co.zw/interface/remotetransaction'
 
     def __init__(self, pid: str='',
                  pkey: str='',
                  returnurl: str='',
                  resulturl: str='',
-                 email: str='',
+                 authemail: str='',
                  phone: str=None):
 
         self.pid = pid
         self.pkey = pkey
         self.returnurl = returnurl
         self.resulturl = resulturl
-        self.email = email
+        self.authemail = authemail
         self.phone = phone
+        self.reference = ""
+        self.products: dict = {}
+        self.frompaynow: dict = {}
+        self.method : str = "ecocash"
 
 
-    def set_response_from_paynow(self, response):
-        self.frompaynw = self.cipher(response, method='decrypt') if response else None
-        return self.frompaynw
+    def set_response_from_paynow(self, resp) -> dict:
+        ''' Setter for response from Paynow '''
+
+        self.frompaynow = self.decrypt(resp)
+        return self.frompaynow
 
 
-    def total(self):
-        """ Adds totals of items in cart. Return float to 2 decimal point """
+    def total(self) -> float:
+        """ calculate the total of products in cart to two decimal point """
 
         with localcontext() as ctx:
             ctx.prec = 2
-        amt = sum(value for value in self.products.values())
-        if amt <= 1:
+        amount = sum(value for value in self.products.values())
+        if amount <= 1:
             raise ValueError('Payments less than $1 are disallowed!')
-        return float(Decimal(amt).quantize(Decimal('.00')))
+        return float(Decimal(amount).quantize(Decimal('.00')))
 
 
-    def send_payment(self, reference, products):
+    def send_payment(self, reference, products) -> dict:
+        ''' Sends the transaction to Paynow'''
+
         data = self.build_request(reference, products)
         try:
-            if data['authemail'] and data['phone']:
-                if all([data['authemail'], data['phone']]):
-                    # TODO put try except
-                    return self.set_response_from_paynow(
-                        requests.post(mobileurl, data=data))
+            if data['method']: # for mobile payments
+                return self.set_response_from_paynow(
+                        requests.post(self.MOBILE_URL, data=data))
+
             # URL that handles web payments
             return self.set_response_from_paynow(requests.post(
-                                       self.weburl, data=data))
+                                       self.WEB_URL, data=data))
         except Exception as e:
             raise e
 
     def status_update(self):
-        pollurl = self.frompaynw.get('pollurl', '')
+        pollurl = self.frompaynow.get('pollurl', '')
         data = requests.post(pollurl) if pollurl else ''
-        try:return self.cipher(data, method="decrypt")
-        except Exception:pass
+        try:
+            return self.decrypt(data)
+        except Exception:
+            pass
         return data
 
-    def cipher(self, data, method=''):
-        if method == "encrypt":
-            out = ""
-            for key, value in data.items():
-                if(str(key).lower() == 'hash'):
-                    continue
+    def encrypt(self, data) -> str:
+        message = ""
+        for key, value in data.items():
+            if(str(key).lower() == 'hash'):
+                continue
 
-            out += str(value)
-            out += self.pkey.lower()
-            return hashlib.sha512(out.encode('utf-8')).hexdigest().upper()
+            message += str(value)
+        message += self.pkey
+        return hashlib.sha512(message.encode('utf-8')).hexdigest().upper()
 
-        else:
-            msg = {}
-            # TODO find a proper method to strip tabs and newlines ie method
-            try:
-                data = unquote_plus(data.text).replace('\n','').replace('\t','').split('&')
-                raw_list = [data[i].split('=')for i in range(len(data))]
-
-                for i in range(len(raw_list)):
-                    if not len(raw_list[i]) > 2:
-                        msg.update({raw_list[i][0]:raw_list[i][1]})
-                    else:
-                        # TODO hpt to unpack 3 items to 2 vars
-                        pollurl, url, url2 = raw_list[i]
-                        msg.update({pollurl:url+url2})
-                # TODO check the reponse object of an error msg
-                # handle the error
-                if not 'Hash' in msg.keys():
-                    raise ValueError('Paynow messages must have a hash!')
-            except AttributeError:
-                pass
-            return msg
+    def decrypt(self, data) -> dict:
+        # TODO check functionality here
+        try:
+            data = parse_qs(data.text)
+        except Exception as e:
+            print(e)
 
     def build_request(self, reference, products):
+        ''' Build the required post object for Paynow API'''
+
         self.reference = reference
-        try:
-            products = products.items()
-        except Exception as e:
-            raise e
-        for desc, amount in products:
-            self.products[desc] = float(amount)
-        body = {'id':self.pid,
-                'reference':self.reference,
-                'amount':self.total(),
-                'additionalinfo':'',
-                'return_url':self.returnurl,
-                'result_url':self.resulturl,
-                'authemail':self.email,
-                'phone':self.phone,
-                'Status':'Message'
+        for key, amount in products.items():
+            self.products[key] = float(amount)
+
+        body = {'id':self.pid, 'reference':self.reference,
+                'amount':self.total(), 'additionalinfo':'xyz',
+                'returnurl':self.returnurl, 'resulturl':self.resulturl,
+                'authemail':self.authemail, 'phone':self.phone,
+                'method':self.method, 'Status':'Message'
                 }
 
-        body['Hash'] = self.cipher(body, method="encrypt")
+        for key, value in body.items():
+            if (key == 'authemail'):
+                continue
+
+            body[key] = quote_plus(str(value))
+
+        body['Hash'] = self.encrypt(body)
         return body
